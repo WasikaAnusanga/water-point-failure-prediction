@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Water Point Failure Prediction</title>
+
+   <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Water Point Failure Prediction</h1>
+
+        <p class="description">
+            Enter water point information to predict its functionality status.
+        </p>
+
+        <div class="form-section">
+
+            <h2>Basic Information</h2>
+
+                <label for="id">Water Point ID</label>
+                <input type="number" id="id">
+
+                <label for="amount_tsh">Amount of Water Available (TSH)</label>
+                <input type="number" id="amount_tsh">
+
+                <label for="num_private">Private Water Point Count</label>
+                <input type="number" id="num_private">
+
+                <label for="date_recorded">Date Recorded</label>
+                <input type="date" id="date_recorded">
+
+                <label for="funder">Funder</label>
+                <input type="text" id="funder">
+
+                <label for="installer">Installer</label>
+                <input type="text" id="installer">
+
+                <label for="population">Population</label>
+                <input type="number" id="population">
+
+                <h2>Location Information</h2>
+
+                <label for="gps_height">GPS Height</label>
+                <input type="number" id="gps_height">
+
+                <label for="longitude">Longitude</label>
+                <input type="number" step="any" id="longitude">
+
+                <label for="latitude">Latitude</label>
+                <input type="number" step="any" id="latitude">
+
+                <label for="basin">Basin</label>
+                <input type="text" id="basin">
+
+                <label for="subvillage">Subvillage</label>
+                <input type="text" id="subvillage">
+
+                <label for="region">Region</label>
+                <input type="text" id="region">
+
+                <label for="region_code">Region Code</label>
+                <input type="number" id="region_code">
+
+                <label for="district_code">District Code</label>
+                <input type="number" id="district_code">
+
+                <label for="lga">LGA</label>
+                <input type="text" id="lga">
+
+                <label for="ward">Ward</label>
+                <input type="text" id="ward">
+
+
+                <h2>Water Point & Management Information</h2>
+
+                <label for="wpt_name">Water Point Name</label>
+                <input type="text" id="wpt_name">
+
+                <label for="public_meeting">Public Meeting</label>
+                <select id="public_meeting">
+                    <option value="">Select</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+
+                <label for="recorded_by">Recorded By</label>
+                <input type="text" id="recorded_by">
+
+                <label for="scheme_management">Scheme Management</label>
+                <input type="text" id="scheme_management">
+
+                <label for="scheme_name">Scheme Name</label>
+                <input type="text" id="scheme_name">
+
+                <label for="permit">Permit</label>
+                <select id="permit">
+                    <option value="">Select</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+
+                <label for="management">Management</label>
+                <input type="text" id="management">
+
+                <label for="management_group">Management Group</label>
+                <input type="text" id="management_group">
+
+                <label for="payment">Payment</label>
+                <input type="text" id="payment">
+
+                <label for="payment_type">Payment Type</label>
+                <input type="text" id="payment_type">
+
+
+                <h2>Water & Technical Information</h2>
+
+                <label for="water_quality">Water Quality</label>
+                <input type="text" id="water_quality">
+
+                <label for="quality_group">Quality Group</label>
+                <input type="text" id="quality_group">
+
+                <label for="quantity">Quantity</label>
+                <input type="text" id="quantity">
+
+                <label for="quantity_group">Quantity Group</label>
+                <input type="text" id="quantity_group">
+
+                <label for="source">Source</label>
+                <input type="text" id="source">
+
+                <label for="source_type">Source Type</label>
+                <input type="text" id="source_type">
+
+                <label for="source_class">Source Class</label>
+                <input type="text" id="source_class">
+
+                <label for="waterpoint_type">Water Point Type</label>
+                <input type="text" id="waterpoint_type">
+
+                <label for="waterpoint_type_group">Water Point Type Group</label>
+                <input type="text" id="waterpoint_type_group">
+
+                <label for="extraction_type">Extraction Type</label>
+                <input type="text" id="extraction_type">
+
+                <label for="extraction_type_group">Extraction Type Group</label>
+                <input type="text" id="extraction_type_group">
+
+                <label for="extraction_type_class">Extraction Type Class</label>
+                <input type="text" id="extraction_type_class">
+
+                <label for="construction_year">Construction Year</label>
+                <input type="number" id="construction_year">
+
+
+            <button id="predictButton">
+                Predict Water Point Status
+            </button>
+
+        </div>
+
+        <div id="result" class="result-section"></div>
+
+    </div>
+
+    <script src="/static/script.js?v=2"></script>
+
+</body>
+</html>
