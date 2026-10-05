@@ -45,3 +45,4 @@ Thumbs.db
 
 # Preserve empty directories in Git
 !.gitkeep
+models/best_baseline_model.joblib
