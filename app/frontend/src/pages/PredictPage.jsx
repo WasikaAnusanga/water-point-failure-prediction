@@ -86,7 +86,7 @@ export default function PredictPage() {
             isLoading={isLoading}
           />
 
-          <ResultCard result={result} />
+          <ResultCard result={result} onClose={handleReset} />
         </main>
       </div>
 
