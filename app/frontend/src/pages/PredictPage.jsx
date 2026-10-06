@@ -9,7 +9,7 @@ import Footer from '../components/Footer';
 import { getMetadata, checkHealth, predictWaterPoint } from '../api';
 
 export default function PredictPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, token, isAuthenticated } = useAuth();
   const [metadata, setMetadata] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +42,7 @@ export default function PredictPage() {
     setResult(null);
 
     try {
-      const predictionResponse = await predictWaterPoint(formData);
+      const predictionResponse = await predictWaterPoint(formData, token);
       setResult(predictionResponse);
 
       // Smooth scroll to result

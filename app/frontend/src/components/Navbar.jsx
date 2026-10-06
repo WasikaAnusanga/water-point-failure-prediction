@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
 
   const isLandingPage = location.pathname === '/';
@@ -16,6 +17,12 @@ export default function Navbar() {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const handleLogout = async () => {
+    setMobileMenuOpen(false);
+    await logout();
+    navigate('/');
   };
 
   return (
@@ -58,56 +65,57 @@ export default function Navbar() {
         {/* Desktop & Mobile Navigation Links */}
         <div className={`navbar-links-group ${mobileMenuOpen ? 'mobile-visible' : ''}`}>
           <div className="nav-anchors">
-            <Link
-              to="/"
-              className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
-              onClick={() => {
-                setMobileMenuOpen(false);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            >
-              Home
-            </Link>
-
-            {isLandingPage ? (
+            {isAuthenticated ? (
+              /* When Logged In: Show Predict */
               <>
-                <button
-                  type="button"
-                  className="nav-link nav-btn-link"
-                  onClick={() => scrollToSection('problem')}
+                <Link
+                  to="/"
+                  className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+                  onClick={() => setMobileMenuOpen(false)}
                 >
-                  About
-                </button>
-                <button
-                  type="button"
-                  className="nav-link nav-btn-link"
-                  onClick={() => scrollToSection('how-it-works')}
+                  Home
+                </Link>
+                <Link
+                  to="/predict"
+                  className={`nav-link ${location.pathname === '/predict' ? 'active' : ''}`}
+                  onClick={() => setMobileMenuOpen(false)}
                 >
-                  How It Works
-                </button>
+                  Predict
+                </Link>
               </>
             ) : (
+              /* When Logged Out: Show Home, About */
               <>
-                <Link to="/#problem" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
-                  About
+                <Link
+                  to="/"
+                  className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  Home
                 </Link>
-                <Link to="/#how-it-works" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
-                  How It Works
-                </Link>
+                {isLandingPage ? (
+                  <button
+                    type="button"
+                    className="nav-link nav-btn-link"
+                    onClick={() => scrollToSection('problem')}
+                  >
+                    About
+                  </button>
+                ) : (
+                  <Link to="/#problem" className="nav-link" onClick={() => setMobileMenuOpen(false)}>
+                    About
+                  </Link>
+                )}
               </>
             )}
-
-            <Link
-              to="/predict"
-              className={`nav-link ${location.pathname === '/predict' ? 'active' : ''}`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Predictor
-            </Link>
           </div>
 
           <div className="nav-actions">
             {isAuthenticated && user ? (
+              /* Logged In Actions: User name indicator and Logout */
               <div className="user-nav-group">
                 <div className="user-profile-badge" title={`${user.name} (${user.email})`}>
                   <span className="user-avatar-icon">👤</span>
@@ -116,15 +124,13 @@ export default function Navbar() {
                 <button
                   type="button"
                   className="btn-nav-logout"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    logout();
-                  }}
+                  onClick={handleLogout}
                 >
-                  Sign Out
+                  Logout
                 </button>
               </div>
             ) : (
+              /* Logged Out Actions: Sign In and Get Started */
               <>
                 <Link
                   to="/login"

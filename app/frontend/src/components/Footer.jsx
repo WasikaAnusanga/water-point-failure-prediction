@@ -48,7 +48,6 @@ export default function Footer() {
             <ul className="footer-list">
               <li><Link to="/login">Sign In</Link></li>
               <li><Link to="/signup">Create Account</Link></li>
-              <li><Link to="/predict">Guest Predictor</Link></li>
             </ul>
           </div>
         </div>

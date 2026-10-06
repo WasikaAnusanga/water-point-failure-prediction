@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 export default function LandingPage() {
+  const { user, isAuthenticated } = useAuth();
+
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
     if (el) {
@@ -34,9 +37,15 @@ export default function LandingPage() {
             </p>
 
             <div className="hero-cta-group">
-              <Link to="/signup" className="btn-hero-primary">
-                Get Started
-              </Link>
+              {isAuthenticated ? (
+                <Link to="/predict" className="btn-hero-primary">
+                  Launch Predictor
+                </Link>
+              ) : (
+                <Link to="/signup" className="btn-hero-primary">
+                  Get Started
+                </Link>
+              )}
               <button
                 type="button"
                 className="btn-hero-secondary"
@@ -47,10 +56,21 @@ export default function LandingPage() {
             </div>
 
             <div className="hero-quick-access">
-              <span>Already familiar with the system? </span>
-              <Link to="/predict" className="quick-access-link">
-                Launch Predictor Tool directly →
-              </Link>
+              {isAuthenticated && user ? (
+                <>
+                  <span>Active Session: <strong>{user.name}</strong>. </span>
+                  <Link to="/predict" className="quick-access-link">
+                    Open Predictor Tool →
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <span>Authorized users only. </span>
+                  <Link to="/login" className="quick-access-link">
+                    Sign In to access prediction tool →
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
@@ -341,15 +361,20 @@ export default function LandingPage() {
               Access the decision-support predictor tool to evaluate water infrastructure and support maintenance planning.
             </p>
             <div className="cta-actions">
-              <Link to="/signup" className="btn-cta-primary">
-                Create Account
-              </Link>
-              <Link to="/login" className="btn-cta-secondary">
-                Sign In
-              </Link>
-              <Link to="/predict" className="btn-cta-ghost">
-                Launch Predictor as Guest →
-              </Link>
+              {isAuthenticated ? (
+                <Link to="/predict" className="btn-cta-primary">
+                  Launch Predictor Tool →
+                </Link>
+              ) : (
+                <>
+                  <Link to="/signup" className="btn-cta-primary">
+                    Create Account
+                  </Link>
+                  <Link to="/login" className="btn-cta-secondary">
+                    Sign In to Access Predictor
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
