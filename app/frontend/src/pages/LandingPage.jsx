@@ -79,55 +79,12 @@ export default function LandingPage() {
               )}
             </div>
           </div>
-
-          <div className="hero-visual">
-            <div className="hero-glass-card">
-              <div className="glass-card-header">
-                <span className="badge-live-pulse" />
-                <span className="glass-header-title">National Basin Monitoring Preview</span>
-              </div>
-
-              <div className="glass-card-body">
-                <div className="glass-status-pill green">
-                  <span className="pill-icon">✓</span>
-                  <span>Operational Status: Functional</span>
-                </div>
-
-                <div className="glass-metric-row">
-                  <span className="glass-label">Geographic Scope</span>
-                  <strong className="glass-val">Tanzania National Basin Infrastructure</strong>
-                </div>
-
-                <div className="glass-metric-row">
-                  <span className="glass-label">Inference Model</span>
-                  <strong className="glass-val">Tuned XGBoost Multiclass Classifier</strong>
-                </div>
-
-                <div className="glass-metric-row">
-                  <span className="glass-label">Decision Support</span>
-                  <strong className="glass-val">Preventive Maintenance Prioritization</strong>
-                </div>
-
-                <div className="glass-progress-block">
-                  <div className="glass-progress-labels">
-                    <span>Model Prediction Reliability</span>
-                    <span>High Confidence</span>
-                  </div>
-                  <div className="glass-bar-track">
-                    <div className="glass-bar-fill" style={{ width: '88.6%' }} />
-                  </div>
-                </div>
-              </div>
-
-              <div className="glass-card-footer">
-                <span>📍 Coverage: Lake Victoria · Rufiji · Pangani · Wami/Ruvu</span>
-              </div>
-            </div>
-          </div>
         </div>
+      </header>
 
-        {/* Hero Key Highlights Ribbon */}
-        <div className="hero-stats-ribbon-wrapper">
+      {/* 2. Key Highlights Metrics Bar */}
+      <section className="stats-bar-section" aria-label="Key Performance Indicators">
+        <div className="stats-bar-container">
           <div className="hero-stats-ribbon glass-ribbon">
             <div className="stat-ribbon-item">
               <div className="stat-number">59,400+</div>
@@ -150,7 +107,7 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </header>
+      </section>
 
       {/* 2. Problem Section */}
       <section id="problem" className="section-block problem-section">

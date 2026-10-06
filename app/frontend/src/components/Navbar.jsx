@@ -97,13 +97,15 @@ export default function Navbar() {
               </>
             )}
 
-            <Link
-              to="/predict"
-              className={`nav-link ${location.pathname === '/predict' ? 'active' : ''}`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Predictor
-            </Link>
+            {isAuthenticated && (
+              <Link
+                to="/predict"
+                className={`nav-link ${location.pathname === '/predict' ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Predictor
+              </Link>
+            )}
           </div>
 
           <div className="nav-actions">
