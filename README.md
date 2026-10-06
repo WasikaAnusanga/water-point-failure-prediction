@@ -302,8 +302,8 @@ From the project root:
 # Activate existing conda environment or virtual environment
 conda activate mlom-en
 # OR:
-# python -m venv venv
-# venv\Scripts\activate   (Windows)
+python -m venv venv
+venv\Scripts\activate   (Windows)
 # source venv/bin/activate (Linux/macOS)
 
 # Install backend dependencies
