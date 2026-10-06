@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import heroImage from '../assets/hero.png';
 
 export default function LandingPage() {
   const { user, isAuthenticated } = useAuth();
@@ -18,8 +19,13 @@ export default function LandingPage() {
     <div className="landing-page-wrapper">
       <Navbar />
 
-      {/* 1. Hero Section */}
-      <header className="hero-section">
+      {/* 1. Hero Section with hero.png as Background */}
+      <header
+        className="hero-section hero-bg-image"
+        style={{ backgroundImage: `url(${heroImage})` }}
+      >
+        <div className="hero-bg-overlay" />
+
         <div className="hero-container">
           <div className="hero-content">
             <div className="hero-badge">
@@ -74,58 +80,73 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="hero-visual" aria-hidden="true">
-            <div className="hero-card-preview">
-              <div className="preview-header">
-                <div className="preview-dot red" />
-                <div className="preview-dot yellow" />
-                <div className="preview-dot green" />
-                <span className="preview-title">Tanzania Basin Monitoring Preview</span>
+          <div className="hero-visual">
+            <div className="hero-glass-card">
+              <div className="glass-card-header">
+                <span className="badge-live-pulse" />
+                <span className="glass-header-title">National Basin Monitoring Preview</span>
               </div>
 
-              <div className="preview-body">
-                {/* Visual Waterpoint Card Graphic */}
-                <div className="preview-status-pill green">
+              <div className="glass-card-body">
+                <div className="glass-status-pill green">
                   <span className="pill-icon">✓</span>
                   <span>Operational Status: Functional</span>
                 </div>
 
-                <div className="preview-metrics-grid">
-                  <div className="preview-metric-item">
-                    <span className="metric-label">Regional Basin</span>
-                    <span className="metric-val">Rufiji Basin</span>
-                  </div>
-                  <div className="preview-metric-item">
-                    <span className="metric-label">Extraction Type</span>
-                    <span className="metric-val">Gravity Standpipe</span>
-                  </div>
-                  <div className="preview-metric-item">
-                    <span className="metric-label">Water Quantity</span>
-                    <span className="metric-val">Adequate / Enough</span>
-                  </div>
-                  <div className="preview-metric-item">
-                    <span className="metric-label">Pipeline Confidence</span>
-                    <span className="metric-val">88.6%</span>
-                  </div>
+                <div className="glass-metric-row">
+                  <span className="glass-label">Geographic Scope</span>
+                  <strong className="glass-val">Tanzania National Basin Infrastructure</strong>
                 </div>
 
-                <div className="preview-progress-box">
-                  <div className="progress-label-row">
-                    <span>Model Inference Probability</span>
-                    <span>High Reliability</span>
-                  </div>
-                  <div className="preview-bar-track">
-                    <div className="preview-bar-fill" style={{ width: '88%' }} />
-                  </div>
+                <div className="glass-metric-row">
+                  <span className="glass-label">Inference Model</span>
+                  <strong className="glass-val">Tuned XGBoost Multiclass Classifier</strong>
                 </div>
 
-                <div className="preview-footer-note">
-                  <svg className="water-drop-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                  </svg>
-                  <span>Trained on 59,400 validated water points</span>
+                <div className="glass-metric-row">
+                  <span className="glass-label">Decision Support</span>
+                  <strong className="glass-val">Preventive Maintenance Prioritization</strong>
+                </div>
+
+                <div className="glass-progress-block">
+                  <div className="glass-progress-labels">
+                    <span>Model Prediction Reliability</span>
+                    <span>High Confidence</span>
+                  </div>
+                  <div className="glass-bar-track">
+                    <div className="glass-bar-fill" style={{ width: '88.6%' }} />
+                  </div>
                 </div>
               </div>
+
+              <div className="glass-card-footer">
+                <span>📍 Coverage: Lake Victoria · Rufiji · Pangani · Wami/Ruvu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Hero Key Highlights Ribbon */}
+        <div className="hero-stats-ribbon-wrapper">
+          <div className="hero-stats-ribbon glass-ribbon">
+            <div className="stat-ribbon-item">
+              <div className="stat-number">59,400+</div>
+              <div className="stat-label">Validated Waterpoints</div>
+            </div>
+            <div className="stat-ribbon-divider" />
+            <div className="stat-ribbon-item">
+              <div className="stat-number">18</div>
+              <div className="stat-label">Geospatial & Operational Features</div>
+            </div>
+            <div className="stat-ribbon-divider" />
+            <div className="stat-ribbon-item">
+              <div className="stat-number">3 Classes</div>
+              <div className="stat-label">Functional · Repair · Non-Functional</div>
+            </div>
+            <div className="stat-ribbon-divider" />
+            <div className="stat-ribbon-item">
+              <div className="stat-number">70.2%</div>
+              <div className="stat-label">Independent Macro Recall</div>
             </div>
           </div>
         </div>
