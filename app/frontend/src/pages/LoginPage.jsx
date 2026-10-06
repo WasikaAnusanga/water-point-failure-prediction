@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import logoImage from '../assets/logo.png';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -39,11 +40,7 @@ export default function LoginPage() {
         <div className="auth-card">
           <div className="auth-card-header">
             <div className="auth-icon-badge">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                <polyline points="10 17 15 12 10 7" />
-                <line x1="15" y1="12" x2="3" y2="12" />
-              </svg>
+              <img src={logoImage} alt="WaterPoint AI Logo" className="auth-logo-img" />
             </div>
             <h1 className="auth-title">Sign In to WaterPoint AI</h1>
             <p className="auth-subtitle">

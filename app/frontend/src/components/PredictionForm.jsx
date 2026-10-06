@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logoImage from '../assets/logo.png';
 
 const INITIAL_FORM_STATE = {
   // 1. Location
@@ -170,40 +171,56 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
 
   return (
     <form className="prediction-form-wrapper" onSubmit={handleSubmit} noValidate>
-      {/* Sample Presets Card */}
-      <div className="preset-card">
-        <div className="preset-header">
-          <span className="preset-title">Test with representative field cases:</span>
-          <span className="preset-hint">Populates all 18 input fields with historical project data</span>
+      {/* Unified Predictor Tool Header & Quick-Fill Toolbar */}
+      <div className="predictor-workspace-header">
+        <div className="predictor-header-main">
+          <div className="predictor-brand-row">
+            <div className="predictor-badge-icon">
+              <img src={logoImage} alt="WaterPoint AI Logo" className="predictor-logo-img" />
+            </div>
+            <div>
+              <h1 className="predictor-workspace-title">Tanzania Waterpoint Status Predictor</h1>
+              <p className="predictor-workspace-desc">
+                Evaluate infrastructure failure risk across 18 operational indicators, or load a representative test case below.
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="preset-buttons-row">
-          <button
-            type="button"
-            className="preset-btn"
-            onClick={() => handleLoadPreset('functional')}
-            disabled={isLoading}
-          >
-            <span className="preset-indicator green" />
-            <span>Load Functional Example</span>
-          </button>
-          <button
-            type="button"
-            className="preset-btn"
-            onClick={() => handleLoadPreset('needs_repair')}
-            disabled={isLoading}
-          >
-            <span className="preset-indicator amber" />
-            <span>Load Needs Repair Example</span>
-          </button>
-          <button
-            type="button"
-            className="preset-btn"
-            onClick={() => handleLoadPreset('non_functional')}
-            disabled={isLoading}
-          >
-            <span className="preset-indicator red" />
-            <span>Load Non-Functional Example</span>
-          </button>
+
+        <div className="predictor-presets-bar">
+          <span className="preset-bar-tag">Quick-Fill Field Cases:</span>
+          <div className="preset-buttons-row">
+            <button
+              type="button"
+              className="preset-btn"
+              onClick={() => handleLoadPreset('functional')}
+              disabled={isLoading}
+              title="Load functional spring with gravity extraction in Rufiji"
+            >
+              <span className="preset-indicator green" />
+              <span>Functional Case</span>
+            </button>
+            <button
+              type="button"
+              className="preset-btn"
+              onClick={() => handleLoadPreset('needs_repair')}
+              disabled={isLoading}
+              title="Load waterpoint needing minor repair in Pangani"
+            >
+              <span className="preset-indicator amber" />
+              <span>Needs Repair Case</span>
+            </button>
+            <button
+              type="button"
+              className="preset-btn"
+              onClick={() => handleLoadPreset('non_functional')}
+              disabled={isLoading}
+              title="Load non-functional hand pump in Lake Victoria"
+            >
+              <span className="preset-indicator red" />
+              <span>Non-Functional Case</span>
+            </button>
+          </div>
         </div>
       </div>
 

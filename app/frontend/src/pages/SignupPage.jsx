@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import logoImage from '../assets/logo.png';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -42,12 +43,7 @@ export default function SignupPage() {
         <div className="auth-card">
           <div className="auth-card-header">
             <div className="auth-icon-badge">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <line x1="19" y1="8" x2="19" y2="14" />
-                <line x1="22" y1="11" x2="16" y2="11" />
-              </svg>
+              <img src={logoImage} alt="WaterPoint AI Logo" className="auth-logo-img" />
             </div>
             <h1 className="auth-title">Create Account</h1>
             <p className="auth-subtitle">

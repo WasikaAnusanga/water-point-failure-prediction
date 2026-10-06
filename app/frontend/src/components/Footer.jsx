@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import logoImage from '../assets/logo.png';
 
 export default function Footer() {
   const scrollToTop = () => {
@@ -12,17 +13,7 @@ export default function Footer() {
         <div className="footer-top-row">
           <div className="footer-brand-column">
             <div className="footer-logo">
-              <svg
-                className="footer-icon-svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-              </svg>
+              <img src={logoImage} alt="WaterPoint AI Logo" className="footer-logo-img" />
               <span className="footer-title">WaterPoint AI</span>
             </div>
             <p className="footer-tagline">

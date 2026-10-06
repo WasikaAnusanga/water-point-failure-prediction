@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import logoImage from '../assets/logo.png';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,17 +25,7 @@ export default function Navbar() {
         {/* Brand Logo */}
         <Link to="/" className="navbar-brand">
           <div className="brand-icon-wrapper">
-            <svg
-              className="brand-icon-svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-            </svg>
+            <img src={logoImage} alt="WaterPoint AI Logo" className="brand-logo-img" />
           </div>
           <div className="brand-text-group">
             <span className="brand-name">WaterPoint AI</span>
