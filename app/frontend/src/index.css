@@ -1739,10 +1739,14 @@ a {
 }
 
 .field-error-msg {
-  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.785rem;
   color: #dc2626;
-  font-weight: 500;
-  margin-top: 0.15rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+  line-height: 1.35;
 }
 
 .field-control {
@@ -1755,12 +1759,22 @@ a {
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .field-control:focus {
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.field-control.has-error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+.field-control.has-error:focus {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
 }
 
 .field-control:disabled {

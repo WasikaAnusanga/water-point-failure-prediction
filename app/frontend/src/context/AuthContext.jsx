@@ -54,8 +54,8 @@ export function AuthProvider({ children }) {
     return res;
   };
 
-  const signup = async ({ name, organization, email, password }) => {
-    const res = await signUpUser({ name, organization, email, password });
+  const signup = async (signupData) => {
+    const res = await signUpUser(signupData);
     if (res.access_token && res.user) {
       setToken(res.access_token);
       setUser(res.user);

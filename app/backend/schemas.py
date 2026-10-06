@@ -1,6 +1,6 @@
 from enum import Enum
-from typing import Dict, List, Any, Union
-from pydantic import BaseModel, Field, field_validator
+from typing import Dict, List, Any, Union, Optional
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class BasinEnum(str, Enum):
@@ -246,6 +246,15 @@ class UserSignUp(BaseModel):
     organization: str = Field(default="", max_length=150)
     email: str = Field(..., min_length=5, max_length=120)
     password: str = Field(..., min_length=6, max_length=100)
+    confirm_password: Optional[str] = Field(default=None, min_length=6, max_length=100)
+    confirmPassword: Optional[str] = Field(default=None, min_length=6, max_length=100)
+
+    @model_validator(mode="after")
+    def verify_password_match(self):
+        confirm = self.confirm_password or self.confirmPassword
+        if confirm is not None and self.password != confirm:
+            raise ValueError("Passwords do not match. Please ensure both passwords are identical.")
+        return self
 
 
 class UserLogin(BaseModel):

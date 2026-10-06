@@ -9,24 +9,63 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [serverError, setServerError] = useState(null);
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const isRedirectedFromPredict = location.state?.from?.pathname === '/predict';
 
+  const handleFieldChange = (field, value, setter) => {
+    setter(value);
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+    if (serverError) {
+      setServerError(null);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const errors = {};
+
+    if (!email.trim()) {
+      errors.email = 'Please enter your registered email address.';
+    }
+    if (!password) {
+      errors.password = 'Please enter your password.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setServerError(null);
+      return;
+    }
+
     setIsLoading(true);
-    setError(null);
+    setFieldErrors({});
+    setServerError(null);
 
     try {
       await login(email, password);
       const destination = location.state?.from?.pathname || '/predict';
       navigate(destination, { replace: true });
     } catch (err) {
-      setError(err.message || 'Authentication failed. Please check your credentials.');
+      const msg = err.message || 'Authentication failed. Please check your credentials.';
+      if (msg.toLowerCase().includes('credential') || msg.toLowerCase().includes('password') || msg.toLowerCase().includes('invalid')) {
+        setFieldErrors({
+          email: 'Invalid credentials. Please verify your email and password.',
+          password: ' '
+        });
+      } else {
+        setServerError(msg);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +87,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {isRedirectedFromPredict && !error && (
+          {isRedirectedFromPredict && !serverError && Object.keys(fieldErrors).length === 0 && (
             <div className="system-alert alert-info auth-alert" role="alert">
               <span className="alert-icon">🔒</span>
               <div className="alert-content">
@@ -58,29 +97,32 @@ export default function LoginPage() {
             </div>
           )}
 
-          {error && (
+          {serverError && (
             <div className="system-alert alert-danger alert-error auth-alert" role="alert">
               <span className="alert-icon">⚠️</span>
               <div className="alert-content">
-                <strong className="alert-title">Sign In Failed:</strong>
-                <span className="alert-msg">{error}</span>
+                <strong className="alert-title">Sign In Error:</strong>
+                <span className="alert-msg">{serverError}</span>
               </div>
             </div>
           )}
 
-          <form className="auth-form" onSubmit={handleSubmit}>
+          <form className="auth-form" onSubmit={handleSubmit} noValidate>
             <div className="field-group">
               <label htmlFor="login-email">Email Address</label>
               <input
                 type="email"
                 id="login-email"
-                className="field-control"
+                className={`field-control ${fieldErrors.email ? 'has-error' : ''}`}
                 placeholder="officer@waterboard.gov.tz"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => handleFieldChange('email', e.target.value, setEmail)}
                 required
                 disabled={isLoading}
               />
+              {fieldErrors.email && (
+                <span className="field-error-msg">⚠️ {fieldErrors.email}</span>
+              )}
             </div>
 
             <div className="field-group">
@@ -88,13 +130,16 @@ export default function LoginPage() {
               <input
                 type="password"
                 id="login-password"
-                className="field-control"
+                className={`field-control ${fieldErrors.password ? 'has-error' : ''}`}
                 placeholder="••••••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => handleFieldChange('password', e.target.value, setPassword)}
                 required
                 disabled={isLoading}
               />
+              {fieldErrors.password && fieldErrors.password.trim() && (
+                <span className="field-error-msg">⚠️ {fieldErrors.password}</span>
+              )}
             </div>
 
             <button
