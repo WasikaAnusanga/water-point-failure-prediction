@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -8,12 +9,29 @@ export default function SignupPage() {
   const [organization, setOrganization] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { signup } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Academic prototype: proceed directly to predictor
-    navigate('/predict');
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters in length.');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await signup({ name, organization, email, password });
+      navigate('/predict');
+    } catch (err) {
+      setError(err.message || 'Registration failed. Please check the provided information.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -37,6 +55,16 @@ export default function SignupPage() {
             </p>
           </div>
 
+          {error && (
+            <div className="system-alert alert-danger alert-error auth-alert" role="alert">
+              <span className="alert-icon">⚠️</span>
+              <div className="alert-content">
+                <strong className="alert-title">Registration Failed:</strong>
+                <span className="alert-msg">{error}</span>
+              </div>
+            </div>
+          )}
+
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="field-group">
               <label htmlFor="signup-name">Full Name</label>
@@ -48,6 +76,7 @@ export default function SignupPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -60,7 +89,7 @@ export default function SignupPage() {
                 placeholder="Rufiji Basin Water Board (RBWB)"
                 value={organization}
                 onChange={(e) => setOrganization(e.target.value)}
-                required
+                disabled={isLoading}
               />
             </div>
 
@@ -74,11 +103,12 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
             <div className="field-group">
-              <label htmlFor="signup-password">Password</label>
+              <label htmlFor="signup-password">Password (min 6 characters)</label>
               <input
                 type="password"
                 id="signup-password"
@@ -87,11 +117,17 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={6}
+                disabled={isLoading}
               />
             </div>
 
-            <button type="submit" className="btn-action btn-submit auth-submit-btn">
-              <span>Create Account & Continue</span>
+            <button
+              type="submit"
+              className="btn-action btn-submit auth-submit-btn"
+              disabled={isLoading}
+            >
+              <span>{isLoading ? 'Creating Account...' : 'Create Account & Continue'}</span>
               <span className="btn-icon">→</span>
             </button>
 

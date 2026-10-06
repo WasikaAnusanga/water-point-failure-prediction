@@ -239,3 +239,30 @@ class MetadataResponse(BaseModel):
     categorical_features: List[str]
     ordered_feature_names: List[str]
     categorical_values: Dict[str, List[str]]
+
+
+class UserSignUp(BaseModel):
+    name: str = Field(..., min_length=2, max_length=100)
+    organization: str = Field(default="", max_length=150)
+    email: str = Field(..., min_length=5, max_length=120)
+    password: str = Field(..., min_length=6, max_length=100)
+
+
+class UserLogin(BaseModel):
+    email: str = Field(..., min_length=5, max_length=120)
+    password: str = Field(..., min_length=1, max_length=100)
+
+
+class UserProfile(BaseModel):
+    id: str
+    name: str
+    organization: str
+    email: str
+    created_at: str
+
+
+class AuthResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserProfile
+

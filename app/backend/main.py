@@ -1,5 +1,6 @@
 import logging
-from fastapi import FastAPI, HTTPException, status, Request
+from typing import Optional
+from fastapi import FastAPI, HTTPException, status, Request, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
@@ -9,17 +10,35 @@ try:
         WaterPointInput,
         PredictionResponse,
         HealthResponse,
-        MetadataResponse
+        MetadataResponse,
+        UserSignUp,
+        UserLogin,
+        UserProfile,
+        AuthResponse
     )
     from app.backend.model_service import model_service
+    from app.backend.auth_service import (
+        register_new_user,
+        authenticate_user,
+        get_current_user_profile
+    )
 except ImportError:
     from schemas import (
         WaterPointInput,
         PredictionResponse,
         HealthResponse,
-        MetadataResponse
+        MetadataResponse,
+        UserSignUp,
+        UserLogin,
+        UserProfile,
+        AuthResponse
     )
     from model_service import model_service
+    from auth_service import (
+        register_new_user,
+        authenticate_user,
+        get_current_user_profile
+    )
 
 logger = logging.getLogger("waterpoint_api")
 
@@ -133,6 +152,78 @@ def predict_water_point_status(input_data: WaterPointInput) -> PredictionRespons
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to execute model prediction pipeline."
+        )
+
+
+@app.post(
+    "/auth/signup",
+    response_model=AuthResponse,
+    summary="Register a new user in MongoDB Atlas",
+    tags=["Authentication"]
+)
+def signup(user_in: UserSignUp) -> AuthResponse:
+    try:
+        return register_new_user(user_in)
+    except ValueError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(ve)
+        )
+    except Exception as e:
+        logger.error(f"Signup error: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to register user account."
+        )
+
+
+@app.post(
+    "/auth/login",
+    response_model=AuthResponse,
+    summary="Sign in an existing user using MongoDB Atlas",
+    tags=["Authentication"]
+)
+def login(user_in: UserLogin) -> AuthResponse:
+    try:
+        return authenticate_user(user_in)
+    except ValueError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(ve)
+        )
+    except Exception as e:
+        logger.error(f"Login error: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Authentication failed. Please verify credentials."
+        )
+
+
+@app.get(
+    "/auth/me",
+    response_model=UserProfile,
+    summary="Get current user profile using Bearer token",
+    tags=["Authentication"]
+)
+def get_current_user(authorization: Optional[str] = Header(None)) -> UserProfile:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing or invalid Authorization header."
+        )
+    token = authorization.split("Bearer ")[1].strip()
+    try:
+        return get_current_user_profile(token)
+    except ValueError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(ve)
+        )
+    except Exception as e:
+        logger.error(f"Token verification error: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve user profile."
         )
 
 

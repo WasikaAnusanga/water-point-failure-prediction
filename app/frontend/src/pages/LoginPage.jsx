@@ -1,17 +1,30 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Academic prototype: proceed directly to predictor
-    navigate('/predict');
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await login(email, password);
+      navigate('/predict');
+    } catch (err) {
+      setError(err.message || 'Authentication failed. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -30,9 +43,19 @@ export default function LoginPage() {
             </div>
             <h1 className="auth-title">Sign In to WaterPoint AI</h1>
             <p className="auth-subtitle">
-              Access the waterpoint status prediction tool and maintenance decision-support system.
+              Authenticate via MongoDB to access the waterpoint status prediction tool and maintenance decision-support system.
             </p>
           </div>
+
+          {error && (
+            <div className="system-alert alert-danger alert-error auth-alert" role="alert">
+              <span className="alert-icon">⚠️</span>
+              <div className="alert-content">
+                <strong className="alert-title">Sign In Failed:</strong>
+                <span className="alert-msg">{error}</span>
+              </div>
+            </div>
+          )}
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <div className="field-group">
@@ -45,6 +68,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -58,11 +82,16 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
-            <button type="submit" className="btn-action btn-submit auth-submit-btn">
-              <span>Sign In</span>
+            <button
+              type="submit"
+              className="btn-action btn-submit auth-submit-btn"
+              disabled={isLoading}
+            >
+              <span>{isLoading ? 'Authenticating...' : 'Sign In'}</span>
               <span className="btn-icon">→</span>
             </button>
 

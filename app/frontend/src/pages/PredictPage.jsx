@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Header from '../components/Header';
 import PredictionForm from '../components/PredictionForm';
@@ -8,6 +9,7 @@ import Footer from '../components/Footer';
 import { getMetadata, checkHealth, predictWaterPoint } from '../api';
 
 export default function PredictPage() {
+  const { user, isAuthenticated } = useAuth();
   const [metadata, setMetadata] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -72,7 +74,15 @@ export default function PredictPage() {
           <Link to="/" className="back-home-link">
             ← Back to Landing Page
           </Link>
-          <span className="current-tool-badge">Operational Tool</span>
+          <div className="predict-nav-right">
+            {isAuthenticated && user && (
+              <span className="user-session-badge">
+                <span className="session-dot">●</span>
+                <span>Active: <strong>{user.name}</strong> {user.organization ? `· ${user.organization}` : ''}</span>
+              </span>
+            )}
+            <span className="current-tool-badge">Operational Tool</span>
+          </div>
         </div>
 
         <Header isConnected={isConnected} />

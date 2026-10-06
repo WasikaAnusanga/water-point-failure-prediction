@@ -202,4 +202,76 @@ export async function predictWaterPoint(payload) {
   return data;
 }
 
+/**
+ * Register a new user in MongoDB Atlas
+ */
+export async function signUpUser({ name, organization, email, password }) {
+  let res;
+  try {
+    res = await fetch(`${API_BASE_URL}/auth/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ name, organization, email, password })
+    });
+  } catch (err) {
+    throw new Error(`Connection error: Could not reach backend server at ${API_BASE_URL}.`);
+  }
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.detail || 'Sign up failed.');
+  }
+
+  return data;
+}
+
+/**
+ * Sign in existing user with MongoDB Atlas credentials
+ */
+export async function signInUser({ email, password }) {
+  let res;
+  try {
+    res = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+  } catch (err) {
+    throw new Error(`Connection error: Could not reach backend server at ${API_BASE_URL}.`);
+  }
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.detail || 'Sign in failed.');
+  }
+
+  return data;
+}
+
+/**
+ * Fetch current user profile using JWT token
+ */
+export async function fetchCurrentUser(token) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/me`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      }
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    return null;
+  }
+}
+
 export { API_BASE_URL };
+

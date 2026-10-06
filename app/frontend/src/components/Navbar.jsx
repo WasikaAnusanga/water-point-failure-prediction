@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const isLandingPage = location.pathname === '/';
 
@@ -105,20 +107,41 @@ export default function Navbar() {
           </div>
 
           <div className="nav-actions">
-            <Link
-              to="/login"
-              className="btn-nav-signin"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/signup"
-              className="btn-nav-getstarted"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Get Started
-            </Link>
+            {isAuthenticated && user ? (
+              <div className="user-nav-group">
+                <div className="user-profile-badge" title={`${user.name} (${user.email})`}>
+                  <span className="user-avatar-icon">👤</span>
+                  <span className="user-name-text">{user.name.split(' ')[0]}</span>
+                </div>
+                <button
+                  type="button"
+                  className="btn-nav-logout"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    logout();
+                  }}
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="btn-nav-signin"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="btn-nav-getstarted"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
