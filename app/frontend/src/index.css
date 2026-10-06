@@ -1770,11 +1770,18 @@ a {
 .field-control.has-error {
   border-color: #ef4444 !important;
   background-color: #fef2f2 !important;
+  animation: fieldShake 0.35s ease-in-out;
+}
+
+@keyframes fieldShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
 }
 
 .field-control.has-error:focus {
   border-color: #dc2626 !important;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2) !important;
 }
 
 .field-control:disabled {

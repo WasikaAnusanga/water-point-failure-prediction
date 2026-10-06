@@ -140,32 +140,70 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
 
   const validate = () => {
     const errors = {};
-    if (formData.amount_tsh === '' || formData.amount_tsh < 0) {
-      errors.amount_tsh = 'Amount TSH must be 0 or greater';
+    if (formData.gps_height === '' || formData.gps_height === null || isNaN(formData.gps_height)) {
+      errors.gps_height = 'GPS Height is required';
     }
-    if (formData.population === '' || formData.population < 0) {
-      errors.population = 'Population must be 0 or greater';
-    }
-    if (formData.waterpoint_age === '' || formData.waterpoint_age < 0) {
-      errors.waterpoint_age = 'Age must be 0 or greater';
-    }
-    if (formData.latitude === '' || formData.latitude < -90 || formData.latitude > 90) {
+    if (formData.latitude === '' || formData.latitude === null || isNaN(formData.latitude) || formData.latitude < -90 || formData.latitude > 90) {
       errors.latitude = 'Latitude must be between -90 and 90';
     }
-    if (formData.longitude === '' || formData.longitude < -180 || formData.longitude > 180) {
+    if (formData.longitude === '' || formData.longitude === null || isNaN(formData.longitude) || formData.longitude < -180 || formData.longitude > 180) {
       errors.longitude = 'Longitude must be between -180 and 180';
     }
-    if (formData.gps_height === '') {
-      errors.gps_height = 'GPS Height is required';
+    if (formData.waterpoint_age === '' || formData.waterpoint_age === null || isNaN(formData.waterpoint_age) || formData.waterpoint_age < 0) {
+      errors.waterpoint_age = 'Age must be 0 or greater';
+    }
+    if (formData.population === '' || formData.population === null || isNaN(formData.population) || formData.population < 0) {
+      errors.population = 'Population must be 0 or greater';
+    }
+    if (formData.amount_tsh === '' || formData.amount_tsh === null || isNaN(formData.amount_tsh) || formData.amount_tsh < 0) {
+      errors.amount_tsh = 'Amount TSH must be 0 or greater';
     }
 
     setClientErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    const errors = validate();
+    const errorKeys = Object.keys(errors);
+
+    if (errorKeys.length > 0) {
+      // Find the first erroneous field according to the DOM order
+      const fieldOrder = [
+        'region',
+        'basin',
+        'gps_height',
+        'latitude',
+        'longitude',
+        'waterpoint_age',
+        'population',
+        'amount_tsh',
+        'extraction_type_class',
+        'source_type',
+        'waterpoint_type_group',
+        'quantity',
+        'quality_group',
+        'scheme_management',
+        'management_group',
+        'payment_type',
+        'public_meeting',
+        'permit'
+      ];
+
+      const firstErrorField = fieldOrder.find(field => errors[field]) || errorKeys[0];
+
+      // Automatically scroll smoothly to the invalid input field and focus on it
+      setTimeout(() => {
+        const targetElement = document.getElementById(firstErrorField) || document.querySelector(`[name="${firstErrorField}"]`);
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetElement.focus({ preventScroll: true });
+        }
+      }, 50);
+      return;
+    }
+
     onSubmit(formData);
   };
 
@@ -281,7 +319,7 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
               type="number"
               id="gps_height"
               name="gps_height"
-              className="field-control"
+              className={`field-control ${clientErrors.gps_height ? 'has-error' : ''}`}
               value={formData.gps_height}
               onChange={handleChange}
               disabled={isLoading}
@@ -302,7 +340,7 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
               type="number"
               id="latitude"
               name="latitude"
-              className="field-control"
+              className={`field-control ${clientErrors.latitude ? 'has-error' : ''}`}
               value={formData.latitude}
               onChange={handleChange}
               disabled={isLoading}
@@ -323,7 +361,7 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
               type="number"
               id="longitude"
               name="longitude"
-              className="field-control"
+              className={`field-control ${clientErrors.longitude ? 'has-error' : ''}`}
               value={formData.longitude}
               onChange={handleChange}
               disabled={isLoading}
@@ -358,7 +396,7 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
               id="waterpoint_age"
               name="waterpoint_age"
               min="0"
-              className="field-control"
+              className={`field-control ${clientErrors.waterpoint_age ? 'has-error' : ''}`}
               value={formData.waterpoint_age}
               onChange={handleChange}
               disabled={isLoading}
@@ -379,7 +417,7 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
               id="population"
               name="population"
               min="0"
-              className="field-control"
+              className={`field-control ${clientErrors.population ? 'has-error' : ''}`}
               value={formData.population}
               onChange={handleChange}
               disabled={isLoading}
@@ -400,7 +438,7 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
               id="amount_tsh"
               name="amount_tsh"
               min="0"
-              className="field-control"
+              className={`field-control ${clientErrors.amount_tsh ? 'has-error' : ''}`}
               value={formData.amount_tsh}
               onChange={handleChange}
               disabled={isLoading}
