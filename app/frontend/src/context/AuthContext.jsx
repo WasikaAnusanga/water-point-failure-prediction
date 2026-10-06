@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { signInUser, signUpUser, signOutUser, fetchCurrentUser } from '../api';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { signInUser, signUpUser, fetchCurrentUser } from '../api';
 
 const AuthContext = createContext(null);
 
@@ -7,102 +7,81 @@ const TOKEN_KEY = 'waterpoint_jwt_token';
 const USER_KEY = 'waterpoint_user_profile';
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // Refresh user profile from backend GET /auth/me using HttpOnly cookie or token
-  const refreshUser = useCallback(async () => {
+  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || null);
+  const [user, setUser] = useState(() => {
     try {
-      const profile = await fetchCurrentUser();
-      if (profile) {
-        setUser(profile);
-        localStorage.setItem(USER_KEY, JSON.stringify(profile));
-        return profile;
-      } else {
-        setUser(null);
-        localStorage.removeItem(USER_KEY);
-        localStorage.removeItem(TOKEN_KEY);
-        return null;
-      }
-    } catch (err) {
-      setUser(null);
+      const stored = localStorage.getItem(USER_KEY);
+      return stored ? JSON.parse(stored) : null;
+    } catch {
       return null;
     }
-  }, []);
+  });
+  const [loading, setLoading] = useState(true);
 
-  // Determine whether the user currently has a valid session on startup
+  // Validate stored token on mount
   useEffect(() => {
-    let isMounted = true;
-    async function initAuth() {
-      try {
-        const profile = await fetchCurrentUser();
-        if (isMounted) {
-          if (profile) {
+    let mounted = true;
+    async function verifySession() {
+      const savedToken = localStorage.getItem(TOKEN_KEY);
+      if (savedToken) {
+        try {
+          const profile = await fetchCurrentUser(savedToken);
+          if (profile && mounted) {
             setUser(profile);
             localStorage.setItem(USER_KEY, JSON.stringify(profile));
-          } else {
-            setUser(null);
-            localStorage.removeItem(USER_KEY);
-            localStorage.removeItem(TOKEN_KEY);
+          } else if (mounted) {
+            // Invalid/expired token
+            logout();
           }
+        } catch {
+          // Keep offline state if available or gracefully handle
         }
-      } catch {
-        if (isMounted) setUser(null);
-      } finally {
-        if (isMounted) setLoading(false);
       }
+      if (mounted) setLoading(false);
     }
-
-    initAuth();
-    return () => {
-      isMounted = false;
-    };
+    verifySession();
+    return () => { mounted = false; };
   }, []);
 
   const login = async (email, password) => {
     const res = await signInUser({ email, password });
-    if (res.access_token) {
-      localStorage.setItem(TOKEN_KEY, res.access_token);
-    }
-    if (res.user) {
+    if (res.access_token && res.user) {
+      setToken(res.access_token);
       setUser(res.user);
+      localStorage.setItem(TOKEN_KEY, res.access_token);
       localStorage.setItem(USER_KEY, JSON.stringify(res.user));
     }
     return res;
   };
 
-  const signup = async ({ name, email, password }) => {
-    const res = await signUpUser({ name, email, password });
-    if (res.access_token) {
-      localStorage.setItem(TOKEN_KEY, res.access_token);
-    }
-    if (res.user) {
+  const signup = async ({ name, organization, email, password }) => {
+    const res = await signUpUser({ name, organization, email, password });
+    if (res.access_token && res.user) {
+      setToken(res.access_token);
       setUser(res.user);
+      localStorage.setItem(TOKEN_KEY, res.access_token);
       localStorage.setItem(USER_KEY, JSON.stringify(res.user));
     }
     return res;
   };
 
-  const logout = async () => {
-    try {
-      await signOutUser();
-    } finally {
-      setUser(null);
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(USER_KEY);
-    }
+  const logout = () => {
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
   };
 
   return (
     <AuthContext.Provider
       value={{
+        token,
         user,
-        isAuthenticated: !!user,
+        isAuthenticated: !!token && !!user,
         loading,
         login,
         signup,
-        logout,
-        refreshUser
+        logout
       }}
     >
       {children}

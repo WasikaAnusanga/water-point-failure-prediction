@@ -172,7 +172,7 @@ export async function checkHealth() {
 }
 
 /**
- * Send water point record for prediction (Requires authentication)
+ * Send water point record for prediction (Requires authentication token)
  */
 export async function predictWaterPoint(payload, token = null) {
   const activeToken = token || localStorage.getItem('waterpoint_jwt_token');
@@ -190,12 +190,11 @@ export async function predictWaterPoint(payload, token = null) {
   try {
     res = await fetch(`${API_BASE_URL}/predict`, {
       method: 'POST',
-      credentials: 'include',
       headers,
       body: JSON.stringify(payload)
     });
   } catch (netErr) {
-    throw new Error(`Prediction API is unavailable at ${API_BASE_URL}. Please ensure the server is running.`);
+    throw new Error(`Backend service is unavailable at ${API_BASE_URL}. Please ensure the prediction server is running.`);
   }
 
   const data = await res.json();
@@ -217,12 +216,11 @@ export async function predictWaterPoint(payload, token = null) {
 /**
  * Register a new user in MongoDB Atlas
  */
-export async function signUpUser({ name, organization = '', email, password }) {
+export async function signUpUser({ name, organization, email, password }) {
   let res;
   try {
     res = await fetch(`${API_BASE_URL}/auth/signup`, {
       method: 'POST',
-      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -230,12 +228,12 @@ export async function signUpUser({ name, organization = '', email, password }) {
       body: JSON.stringify({ name, organization, email, password })
     });
   } catch (err) {
-    throw new Error(`API is unavailable. Could not reach server at ${API_BASE_URL}.`);
+    throw new Error(`Connection error: Could not reach backend server at ${API_BASE_URL}.`);
   }
 
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(data.detail || 'Sign up failed. Please check your information and try again.');
+    throw new Error(data.detail || 'Sign up failed.');
   }
 
   return data;
@@ -249,7 +247,6 @@ export async function signInUser({ email, password }) {
   try {
     res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
-      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -257,53 +254,28 @@ export async function signInUser({ email, password }) {
       body: JSON.stringify({ email, password })
     });
   } catch (err) {
-    throw new Error(`API is unavailable. Could not reach server at ${API_BASE_URL}.`);
+    throw new Error(`Connection error: Could not reach backend server at ${API_BASE_URL}.`);
   }
 
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(data.detail || 'Invalid email or password.');
+    throw new Error(data.detail || 'Sign in failed.');
   }
 
   return data;
 }
 
 /**
- * Sign out user and invalidate HttpOnly cookie session
+ * Fetch current user profile using JWT token
  */
-export async function signOutUser() {
-  try {
-    await fetch(`${API_BASE_URL}/auth/logout`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
-  } catch (err) {
-    console.warn('Logout API warning:', err);
-  }
-  return true;
-}
-
-/**
- * Fetch current user profile using HttpOnly cookie or token
- */
-export async function fetchCurrentUser(token = null) {
-  const activeToken = token || localStorage.getItem('waterpoint_jwt_token');
-  const headers = {
-    'Accept': 'application/json'
-  };
-
-  if (activeToken) {
-    headers['Authorization'] = `Bearer ${activeToken}`;
-  }
-
+export async function fetchCurrentUser(token) {
   try {
     const res = await fetch(`${API_BASE_URL}/auth/me`, {
       method: 'GET',
-      credentials: 'include',
-      headers
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      }
     });
     if (!res.ok) return null;
     return await res.json();

@@ -1,6 +1,6 @@
 import logging
 from typing import Optional
-from fastapi import FastAPI, HTTPException, status, Request, Header, Response
+from fastapi import FastAPI, HTTPException, status, Request, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
@@ -132,18 +132,6 @@ def get_metadata() -> MetadataResponse:
         )
 
 
-def get_token_from_request(request: Request, authorization: Optional[str] = Header(None)) -> Optional[str]:
-    """Extract token from HttpOnly cookie or Authorization header."""
-    cookie_token = request.cookies.get("access_token")
-    if cookie_token and cookie_token.strip():
-        return cookie_token.strip()
-    if authorization and authorization.startswith("Bearer "):
-        token_str = authorization.split("Bearer ")[1].strip()
-        if token_str:
-            return token_str
-    return None
-
-
 @app.post(
     "/predict",
     response_model=PredictionResponse,
@@ -152,15 +140,14 @@ def get_token_from_request(request: Request, authorization: Optional[str] = Head
 )
 def predict_water_point_status(
     input_data: WaterPointInput,
-    request: Request,
     authorization: Optional[str] = Header(None)
 ) -> PredictionResponse:
-    token = get_token_from_request(request, authorization)
-    if not token:
+    if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication required. Only logged-in users can access the prediction system."
         )
+    token = authorization.split("Bearer ")[1].strip()
     try:
         get_current_user_profile(token)
     except Exception:
@@ -191,18 +178,9 @@ def predict_water_point_status(
     summary="Register a new user in MongoDB Atlas",
     tags=["Authentication"]
 )
-def signup(user_in: UserSignUp, response: Response) -> AuthResponse:
+def signup(user_in: UserSignUp) -> AuthResponse:
     try:
-        auth_res = register_new_user(user_in)
-        response.set_cookie(
-            key="access_token",
-            value=auth_res.access_token,
-            httponly=True,
-            samesite="lax",
-            max_age=7 * 24 * 3600,
-            path="/"
-        )
-        return auth_res
+        return register_new_user(user_in)
     except ValueError as ve:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -222,18 +200,9 @@ def signup(user_in: UserSignUp, response: Response) -> AuthResponse:
     summary="Sign in an existing user using MongoDB Atlas",
     tags=["Authentication"]
 )
-def login(user_in: UserLogin, response: Response) -> AuthResponse:
+def login(user_in: UserLogin) -> AuthResponse:
     try:
-        auth_res = authenticate_user(user_in)
-        response.set_cookie(
-            key="access_token",
-            value=auth_res.access_token,
-            httponly=True,
-            samesite="lax",
-            max_age=7 * 24 * 3600,
-            path="/"
-        )
-        return auth_res
+        return authenticate_user(user_in)
     except ValueError as ve:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -247,32 +216,19 @@ def login(user_in: UserLogin, response: Response) -> AuthResponse:
         )
 
 
-@app.post(
-    "/auth/logout",
-    summary="Sign out user and clear HttpOnly session cookie",
-    tags=["Authentication"]
-)
-def logout(response: Response):
-    response.delete_cookie(key="access_token", path="/")
-    return {"message": "Logged out successfully"}
-
-
 @app.get(
     "/auth/me",
     response_model=UserProfile,
-    summary="Get current user profile using HttpOnly cookie or Bearer token",
+    summary="Get current user profile using Bearer token",
     tags=["Authentication"]
 )
-def get_current_user(
-    request: Request,
-    authorization: Optional[str] = Header(None)
-) -> UserProfile:
-    token = get_token_from_request(request, authorization)
-    if not token:
+def get_current_user(authorization: Optional[str] = Header(None)) -> UserProfile:
+    if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing or invalid authentication credentials."
+            detail="Missing or invalid Authorization header."
         )
+    token = authorization.split("Bearer ")[1].strip()
     try:
         return get_current_user_profile(token)
     except ValueError as ve:

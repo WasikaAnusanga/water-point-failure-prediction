@@ -69,8 +69,8 @@ def register_new_user(user_in: UserSignUp) -> AuthResponse:
     if not EMAIL_REGEX.match(email_clean):
         raise ValueError("Please provide a valid email address.")
 
-    if len(user_in.password) < 8:
-        raise ValueError("Password must be at least 8 characters in length.")
+    if len(user_in.password) < 6:
+        raise ValueError("Password must be at least 6 characters in length.")
 
     users_col = get_users_collection()
 
