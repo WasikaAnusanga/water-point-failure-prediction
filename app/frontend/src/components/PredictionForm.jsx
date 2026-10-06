@@ -3,28 +3,28 @@ import logoImage from '../assets/logo.png';
 
 const INITIAL_FORM_STATE = {
   // 1. Location
-  region: 'Iringa',
-  basin: 'Rufiji',
-  latitude: -9.856322,
-  longitude: 34.938093,
-  gps_height: 1390,
+  region: '',
+  basin: '',
+  latitude: '',
+  longitude: '',
+  gps_height: '',
 
   // 2. Waterpoint Information
-  waterpoint_age: 12,
-  population: 109,
-  amount_tsh: 50,
-  extraction_type_class: 'gravity',
-  source_type: 'spring',
-  waterpoint_type_group: 'communal standpipe',
-  quantity: 'enough',
-  quality_group: 'good',
+  waterpoint_age: '',
+  population: '',
+  amount_tsh: '',
+  extraction_type_class: '',
+  source_type: '',
+  waterpoint_type_group: '',
+  quantity: '',
+  quality_group: '',
 
   // 3. Management Information
-  scheme_management: 'VWC',
-  management_group: 'user-group',
-  payment_type: 'never pay',
-  public_meeting: 'Yes',
-  permit: 'No'
+  scheme_management: '',
+  management_group: '',
+  payment_type: '',
+  public_meeting: '',
+  permit: ''
 };
 
 const SAMPLE_PRESETS = {
@@ -140,23 +140,75 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
 
   const validate = () => {
     const errors = {};
+
+    // 1. Location
+    if (!formData.region) {
+      errors.region = 'Region is required';
+    }
+    if (!formData.basin) {
+      errors.basin = 'Basin is required';
+    }
     if (formData.gps_height === '' || formData.gps_height === null || isNaN(formData.gps_height)) {
       errors.gps_height = 'GPS Height is required';
     }
-    if (formData.latitude === '' || formData.latitude === null || isNaN(formData.latitude) || formData.latitude < -90 || formData.latitude > 90) {
+    if (formData.latitude === '' || formData.latitude === null || isNaN(formData.latitude)) {
+      errors.latitude = 'Latitude is required';
+    } else if (formData.latitude < -90 || formData.latitude > 90) {
       errors.latitude = 'Latitude must be between -90 and 90';
     }
-    if (formData.longitude === '' || formData.longitude === null || isNaN(formData.longitude) || formData.longitude < -180 || formData.longitude > 180) {
+    if (formData.longitude === '' || formData.longitude === null || isNaN(formData.longitude)) {
+      errors.longitude = 'Longitude is required';
+    } else if (formData.longitude < -180 || formData.longitude > 180) {
       errors.longitude = 'Longitude must be between -180 and 180';
     }
-    if (formData.waterpoint_age === '' || formData.waterpoint_age === null || isNaN(formData.waterpoint_age) || formData.waterpoint_age < 0) {
+
+    // 2. Waterpoint Information
+    if (formData.waterpoint_age === '' || formData.waterpoint_age === null || isNaN(formData.waterpoint_age)) {
+      errors.waterpoint_age = 'Age is required';
+    } else if (formData.waterpoint_age < 0) {
       errors.waterpoint_age = 'Age must be 0 or greater';
     }
-    if (formData.population === '' || formData.population === null || isNaN(formData.population) || formData.population < 0) {
+    if (formData.population === '' || formData.population === null || isNaN(formData.population)) {
+      errors.population = 'Population is required';
+    } else if (formData.population < 0) {
       errors.population = 'Population must be 0 or greater';
     }
-    if (formData.amount_tsh === '' || formData.amount_tsh === null || isNaN(formData.amount_tsh) || formData.amount_tsh < 0) {
+    if (formData.amount_tsh === '' || formData.amount_tsh === null || isNaN(formData.amount_tsh)) {
+      errors.amount_tsh = 'Amount TSH is required';
+    } else if (formData.amount_tsh < 0) {
       errors.amount_tsh = 'Amount TSH must be 0 or greater';
+    }
+    if (!formData.extraction_type_class) {
+      errors.extraction_type_class = 'Extraction type is required';
+    }
+    if (!formData.source_type) {
+      errors.source_type = 'Source type is required';
+    }
+    if (!formData.waterpoint_type_group) {
+      errors.waterpoint_type_group = 'Waterpoint type is required';
+    }
+    if (!formData.quantity) {
+      errors.quantity = 'Water quantity is required';
+    }
+    if (!formData.quality_group) {
+      errors.quality_group = 'Water quality is required';
+    }
+
+    // 3. Management Information
+    if (!formData.scheme_management) {
+      errors.scheme_management = 'Scheme management is required';
+    }
+    if (!formData.management_group) {
+      errors.management_group = 'Management group is required';
+    }
+    if (!formData.payment_type) {
+      errors.payment_type = 'Payment type is required';
+    }
+    if (!formData.public_meeting) {
+      errors.public_meeting = 'Public meeting status is required';
+    }
+    if (!formData.permit) {
+      errors.permit = 'Permit status is required';
     }
 
     setClientErrors(errors);
@@ -280,16 +332,20 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
             <select
               id="region"
               name="region"
-              className="field-control"
+              className={`field-control ${clientErrors.region ? 'has-error' : ''}`}
               value={formData.region}
               onChange={handleChange}
               disabled={isLoading}
             >
+              <option value="">Select Region</option>
               {(categories.region || []).map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
             <span className="field-help-text">Administrative region in Tanzania</span>
+            {clientErrors.region && (
+              <span className="field-error-msg">{clientErrors.region}</span>
+            )}
           </div>
 
           <div className="field-group">
@@ -299,16 +355,20 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
             <select
               id="basin"
               name="basin"
-              className="field-control"
+              className={`field-control ${clientErrors.basin ? 'has-error' : ''}`}
               value={formData.basin}
               onChange={handleChange}
               disabled={isLoading}
             >
+              <option value="">Select Basin</option>
               {(categories.basin || []).map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
             <span className="field-help-text">Hydrographic water management basin</span>
+            {clientErrors.basin && (
+              <span className="field-error-msg">{clientErrors.basin}</span>
+            )}
           </div>
 
           <div className="field-group">
@@ -319,6 +379,7 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
               type="number"
               id="gps_height"
               name="gps_height"
+              placeholder="e.g. 1390"
               className={`field-control ${clientErrors.gps_height ? 'has-error' : ''}`}
               value={formData.gps_height}
               onChange={handleChange}
@@ -340,6 +401,7 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
               type="number"
               id="latitude"
               name="latitude"
+              placeholder="e.g. -9.856"
               className={`field-control ${clientErrors.latitude ? 'has-error' : ''}`}
               value={formData.latitude}
               onChange={handleChange}
@@ -361,6 +423,7 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
               type="number"
               id="longitude"
               name="longitude"
+              placeholder="e.g. 34.938"
               className={`field-control ${clientErrors.longitude ? 'has-error' : ''}`}
               value={formData.longitude}
               onChange={handleChange}
@@ -395,6 +458,7 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
               type="number"
               id="waterpoint_age"
               name="waterpoint_age"
+              placeholder="e.g. 12"
               min="0"
               className={`field-control ${clientErrors.waterpoint_age ? 'has-error' : ''}`}
               value={formData.waterpoint_age}
@@ -416,6 +480,7 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
               type="number"
               id="population"
               name="population"
+              placeholder="e.g. 109"
               min="0"
               className={`field-control ${clientErrors.population ? 'has-error' : ''}`}
               value={formData.population}
@@ -437,6 +502,7 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
               type="number"
               id="amount_tsh"
               name="amount_tsh"
+              placeholder="e.g. 50"
               min="0"
               className={`field-control ${clientErrors.amount_tsh ? 'has-error' : ''}`}
               value={formData.amount_tsh}
@@ -458,16 +524,20 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
             <select
               id="extraction_type_class"
               name="extraction_type_class"
-              className="field-control"
+              className={`field-control ${clientErrors.extraction_type_class ? 'has-error' : ''}`}
               value={formData.extraction_type_class}
               onChange={handleChange}
               disabled={isLoading}
             >
+              <option value="">Select Extraction Type</option>
               {(categories.extraction_type_class || []).map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
             <span className="field-help-text">Mechanical extraction method</span>
+            {clientErrors.extraction_type_class && (
+              <span className="field-error-msg">{clientErrors.extraction_type_class}</span>
+            )}
           </div>
 
           <div className="field-group">
@@ -477,16 +547,20 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
             <select
               id="source_type"
               name="source_type"
-              className="field-control"
+              className={`field-control ${clientErrors.source_type ? 'has-error' : ''}`}
               value={formData.source_type}
               onChange={handleChange}
               disabled={isLoading}
             >
+              <option value="">Select Source Type</option>
               {(categories.source_type || []).map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
             <span className="field-help-text">Natural water supply source</span>
+            {clientErrors.source_type && (
+              <span className="field-error-msg">{clientErrors.source_type}</span>
+            )}
           </div>
 
           <div className="field-group">
@@ -496,16 +570,20 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
             <select
               id="waterpoint_type_group"
               name="waterpoint_type_group"
-              className="field-control"
+              className={`field-control ${clientErrors.waterpoint_type_group ? 'has-error' : ''}`}
               value={formData.waterpoint_type_group}
               onChange={handleChange}
               disabled={isLoading}
             >
+              <option value="">Select Waterpoint Type</option>
               {(categories.waterpoint_type_group || []).map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
             <span className="field-help-text">Physical structure category</span>
+            {clientErrors.waterpoint_type_group && (
+              <span className="field-error-msg">{clientErrors.waterpoint_type_group}</span>
+            )}
           </div>
 
           <div className="field-group">
@@ -515,16 +593,20 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
             <select
               id="quantity"
               name="quantity"
-              className="field-control"
+              className={`field-control ${clientErrors.quantity ? 'has-error' : ''}`}
               value={formData.quantity}
               onChange={handleChange}
               disabled={isLoading}
             >
+              <option value="">Select Water Quantity</option>
               {(categories.quantity || []).map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
             <span className="field-help-text">Supply adequacy observed on site</span>
+            {clientErrors.quantity && (
+              <span className="field-error-msg">{clientErrors.quantity}</span>
+            )}
           </div>
 
           <div className="field-group">
@@ -534,16 +616,20 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
             <select
               id="quality_group"
               name="quality_group"
-              className="field-control"
+              className={`field-control ${clientErrors.quality_group ? 'has-error' : ''}`}
               value={formData.quality_group}
               onChange={handleChange}
               disabled={isLoading}
             >
+              <option value="">Select Water Quality</option>
               {(categories.quality_group || []).map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
             <span className="field-help-text">Water quality classification</span>
+            {clientErrors.quality_group && (
+              <span className="field-error-msg">{clientErrors.quality_group}</span>
+            )}
           </div>
         </div>
       </div>
@@ -566,16 +652,20 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
             <select
               id="scheme_management"
               name="scheme_management"
-              className="field-control"
+              className={`field-control ${clientErrors.scheme_management ? 'has-error' : ''}`}
               value={formData.scheme_management}
               onChange={handleChange}
               disabled={isLoading}
             >
+              <option value="">Select Scheme Management</option>
               {(categories.scheme_management || []).map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
             <span className="field-help-text">Operating entity in charge</span>
+            {clientErrors.scheme_management && (
+              <span className="field-error-msg">{clientErrors.scheme_management}</span>
+            )}
           </div>
 
           <div className="field-group">
@@ -585,16 +675,20 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
             <select
               id="management_group"
               name="management_group"
-              className="field-control"
+              className={`field-control ${clientErrors.management_group ? 'has-error' : ''}`}
               value={formData.management_group}
               onChange={handleChange}
               disabled={isLoading}
             >
+              <option value="">Select Management Group</option>
               {(categories.management_group || []).map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
             <span className="field-help-text">Governance organization tier</span>
+            {clientErrors.management_group && (
+              <span className="field-error-msg">{clientErrors.management_group}</span>
+            )}
           </div>
 
           <div className="field-group">
@@ -604,16 +698,20 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
             <select
               id="payment_type"
               name="payment_type"
-              className="field-control"
+              className={`field-control ${clientErrors.payment_type ? 'has-error' : ''}`}
               value={formData.payment_type}
               onChange={handleChange}
               disabled={isLoading}
             >
+              <option value="">Select Payment Type</option>
               {(categories.payment_type || []).map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
             <span className="field-help-text">Tariff / fee payment schedule</span>
+            {clientErrors.payment_type && (
+              <span className="field-error-msg">{clientErrors.payment_type}</span>
+            )}
           </div>
 
           <div className="field-group">
@@ -623,16 +721,20 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
             <select
               id="public_meeting"
               name="public_meeting"
-              className="field-control"
+              className={`field-control ${clientErrors.public_meeting ? 'has-error' : ''}`}
               value={formData.public_meeting}
               onChange={handleChange}
               disabled={isLoading}
             >
+              <option value="">Select Option</option>
               {(categories.public_meeting || ['Yes', 'No', 'Missing']).map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
             <span className="field-help-text">Community water governance meeting held</span>
+            {clientErrors.public_meeting && (
+              <span className="field-error-msg">{clientErrors.public_meeting}</span>
+            )}
           </div>
 
           <div className="field-group">
@@ -642,16 +744,20 @@ export default function PredictionForm({ metadata, onSubmit, onReset, isLoading 
             <select
               id="permit"
               name="permit"
-              className="field-control"
+              className={`field-control ${clientErrors.permit ? 'has-error' : ''}`}
               value={formData.permit}
               onChange={handleChange}
               disabled={isLoading}
             >
+              <option value="">Select Option</option>
               {(categories.permit || ['Yes', 'No', 'Missing']).map(opt => (
                 <option key={opt} value={opt}>{opt}</option>
               ))}
             </select>
             <span className="field-help-text">Official water extraction permit status</span>
+            {clientErrors.permit && (
+              <span className="field-error-msg">{clientErrors.permit}</span>
+            )}
           </div>
         </div>
       </div>
